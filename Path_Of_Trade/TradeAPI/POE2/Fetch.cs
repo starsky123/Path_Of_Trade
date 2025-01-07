@@ -25,7 +25,7 @@ namespace Path_Of_Trade.TradeAPI.POE2
                     sr += searchItem.result[i] + "%2c";
                 }
                 string url = SendHTTP.FetchApi[1] + sr + "?query=" + searchItem.ID;
-                string result = SendHTTP.Get(url, 5);
+                string result = SendHTTP.Get(url, 100);
                 return JsonConvert.DeserializeObject<Fetch>(result);
             }
             else return null;

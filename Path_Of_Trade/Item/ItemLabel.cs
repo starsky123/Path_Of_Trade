@@ -10,9 +10,9 @@ namespace Path_Of_Trade.Item
 {
     public class ItemLabel
     {
-        public bool 选择 { get; set; }=false;
-        public string 标签 { get; set; }
-        public string 值 { get; set; }
+        public bool selected { get; set; }=false;
+        public string label { get; set; }
+        public string value { get; set; }
 
         
     }

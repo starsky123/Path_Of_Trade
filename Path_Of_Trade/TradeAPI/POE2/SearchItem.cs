@@ -50,10 +50,10 @@ namespace Path_Of_Trade.TradeAPI.POE2
                     item.query.filters.type_filters.filters.ilvl= new MinMaxFilter { min = ilvl };
 
                 decimal quality = 0;
-                ItemLabel label = itemLabels.SingleOrDefault(s => Translate_Dictionary.translate[s.标签] == "Quality" );
+                ItemLabel label = itemLabels.SingleOrDefault(s => Translate_Dictionary.translate[s.label] == "Quality" );
                 if (label != null)
                 {
-                    quality = Convert.ToDecimal(label.值);
+                    quality = Convert.ToDecimal(label.value);
                 }
                 decimal maxquality = currupted ? 1 : (decimal)1.2/ (1 + quality / 100);
                 #endregion
@@ -145,7 +145,7 @@ namespace Path_Of_Trade.TradeAPI.POE2
                 statFilters.type = "and";
                 for (int i = 0; i < itemStats.Count; i++)
                 {
-                    if (itemStats[i].选择)
+                    if (itemStats[i].selected)
                     {
                         string id = ItemStatsToTrade(itemStats[i], language);
                         if (id != "")
@@ -153,10 +153,10 @@ namespace Path_Of_Trade.TradeAPI.POE2
                             statFilters.filters.Add(new StatFilters_Filter()
                             {
                                 id = id,
-                                value = new MinMaxFilter() { min = itemStats[i].最小值, max = itemStats[i].最大值 }
+                                value = new MinMaxFilter() { min = itemStats[i].min, max = itemStats[i].max }
                             });
                         }
-                        else itemStats[i].选择 = false;
+                        else itemStats[i].selected = false;
                     }
                 }         
                 item.query.stats.Add(statFilters);
@@ -175,7 +175,7 @@ namespace Path_Of_Trade.TradeAPI.POE2
                     DefaultValueHandling = DefaultValueHandling.Ignore
                 });
 
-                string result = SendHTTP.Post(SendHTTP.SearchApi[1] + league, 5, json);
+                string result = SendHTTP.Post(SendHTTP.SearchApi[1] + league, 100, json);
                 return JsonConvert.DeserializeObject<SearchItem>(result);
 
             }
@@ -185,26 +185,26 @@ namespace Path_Of_Trade.TradeAPI.POE2
         {
             string tradestats = "";
             var trade = from i in ItemStats_Dictionary.ItemStatsDictionary
-                        where i.Key.language == language && i.Key.text == itemStats.词缀
+                        where i.Key.language == language && i.Key.text == itemStats.text
                         join t in Trade_Dictionary.TradeStatsDictionary on i.Value equals t.Key.text
-                        where t.Key.type == itemStats.类型
+                        where t.Key.type == itemStats.type
                         select t.Value;
             tradestats = trade.FirstOrDefault() ?? "";
             return tradestats;
         }
         public static string GetLabelValue(List<ItemLabel> itemLabels,string labelname,string type)
         {
-            ItemLabel label = itemLabels.SingleOrDefault(s => Translate_Dictionary.translate[s.标签] == labelname && s.选择);
+            ItemLabel label = itemLabels.SingleOrDefault(s => Translate_Dictionary.translate[s.label] == labelname && s.selected);
             if (type == "decimal")
             {
                 if (label != null)
-                    return label.值;
+                    return label.value;
                 else return "0";
             }
             else
             {
                 if (label != null)
-                    return Translate_Dictionary.translate[label.值];
+                    return Translate_Dictionary.translate[label.value];
                 else return "";                
             }
 

@@ -18,7 +18,7 @@ namespace Path_Of_Trade.TradeAPI.POE2.POEDictionary
         {
             try
             {
-                string result = SendHTTP.Get(SendHTTP.StatsApi[1], 10);
+                string result = SendHTTP.Get(SendHTTP.StatsApi[1], 100);
                 if (!string.IsNullOrEmpty(result))
                 {
                     TradeStatsApi tradeStatsapi = new TradeStatsApi();
@@ -35,7 +35,7 @@ namespace Path_Of_Trade.TradeAPI.POE2.POEDictionary
                         }
                     }
                 }
-                result = SendHTTP.Get(SendHTTP.StaticApi[1], 10);
+                result = SendHTTP.Get(SendHTTP.StaticApi[1], 100);
                 if (!string.IsNullOrEmpty(result))
                 {
                     TradeStaticApi tradeStaticapi = new TradeStaticApi();

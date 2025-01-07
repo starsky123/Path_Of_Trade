@@ -13,6 +13,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -41,15 +42,18 @@ namespace Path_Of_Trade
     public partial class MainWindow : Window
     {
         public bool b = true;
-        public Point be = new();
-        public Point af=new();
+        public System.Windows.Point be = new();
+        public System.Windows.Point af=new();
         public static Dictionary<string, uint> keycode = new() { { "Ctrl", 0x0002 }, { "Alt", 0x0001 }, {"Shift", 0x0004 },{"Win", 0x0008 } };
         public static Dictionary<string, string> grid = new() { { "selected", "选择" }, { "label", "标签" }, { "value", "值" }, { "text", "词缀" }, { "type", "类型" } };
         public MainWindow()
         {
             InitializeComponent();
             try
-            {               
+            {
+                SetWindowSize();
+                //ServicePointManager.ServerCertificateValidationCallback += (s, cert, chain, sslPolicyErrors) => true;
+                //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
                 InitSettings_be();
                 InitDictionary();
                 InitSettings_af();
@@ -65,7 +69,7 @@ namespace Path_Of_Trade
         }
         public void InitLeagueCombo()
         {
-            string result = SendHTTP.Get(SendHTTP.LeagueApi[1], 10);
+            string result = SendHTTP.Get(SendHTTP.LeagueApi[1], 100);
             if (!string.IsNullOrEmpty(result)) 
             {
                 League list=JsonConvert.DeserializeObject<League>(result);
@@ -136,6 +140,15 @@ namespace Path_Of_Trade
             }
             catch (Exception er) { messageshow(er.Message); return false; }
         }
+        public void SetWindowSize()
+        {
+            double dpi = Graphics.FromHwnd(new WindowInteropHelper(Application.Current.MainWindow).Handle).DpiX / 96;
+            //double height = SystemParameters.PrimaryScreenHeight * dpi;
+            //double width=SystemParameters.PrimaryScreenWidth * dpi;
+            //messageshow(dpi.ToString() );
+            this.Width = 742 * 1.5/dpi;
+            this.Height = 940 * 1.5 / dpi;
+        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -171,8 +184,8 @@ namespace Path_Of_Trade
             tagdatagrid.ItemsSource = null;
             tagdatagrid.ItemsSource = equipment.Itemlabel;
 
-            equipment.Itemlabel[0].选择= true;
-            equipment.Itemlabel[1].选择= true;
+            equipment.Itemlabel[0].selected= true;
+            equipment.Itemlabel[1].selected= true;
             statsdatagrid.ItemsSource = null;
             statsdatagrid.ItemsSource = equipment.Itemstats;
 
@@ -204,10 +217,10 @@ namespace Path_Of_Trade
                                    //where pricetypecombo.Text == "任何" ? true : p.listing.price.type == Translate_Dictionary.translate[pricetypecombo.Text]
                                    select new
                                    {
-                                       //价格类型 = p.listing.price.type,
-                                       价格 = p.listing.price.amount.ToString(),
-                                       通货 = fetchresult_currency(p.listing.price.currency),
-                                       上架时间 = fetchresult_date(p.listing.indexed)
+                                       //type = p.listing.price.type,
+                                       price = p.listing.price.amount.ToString(),
+                                       currency = fetchresult_currency(p.listing.price.currency),
+                                       time = fetchresult_date(p.listing.indexed)
                                    };
                         pricedatagrid.ItemsSource = list;
 
@@ -244,38 +257,6 @@ namespace Path_Of_Trade
             string name_EN = Trade_Dictionary.TradeStaticDictionary.FirstOrDefault(s => s.Value == str).Key;
             string name_TR = Translate_Dictionary.currency[name_EN];
             return name_TR;
-        }
-
-        private void tagdatagrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
-        {
-            if (tagdatagrid.ItemsSource != null)
-                if (e.AddedCells[0].Column.GetType() == typeof(DataGridCheckBoxColumn))
-                {
-                    DataGridCellInfo cellinfo = e.AddedCells[0];
-                    CheckBox checkBox = cellinfo.Column.GetCellContent(cellinfo.Item) as CheckBox;
-                    checkBox.IsChecked = !checkBox.IsChecked;
-                    ItemLabel label = (ItemLabel)cellinfo.Item;
-                    List<ItemLabel> itemLabel = tagdatagrid.ItemsSource as List<ItemLabel>;
-                    itemLabel.SingleOrDefault(s => s.标签 == label.标签).选择 = !label.选择;
-                }
-        }
-
-        private void statsdatagrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
-        {
-            if (statsdatagrid.ItemsSource != null)
-                if (e.AddedCells[0].Column.GetType() == typeof(DataGridCheckBoxColumn))
-                {
-
-                    DataGridCellInfo cellinfo = e.AddedCells[0];
-                    CheckBox checkBox = cellinfo.Column.GetCellContent(cellinfo.Item) as CheckBox;
-                    checkBox.IsChecked = !checkBox.IsChecked;
-                    ItemStats stats = (ItemStats)cellinfo.Item;
-                    List<ItemStats> itemStats = statsdatagrid.ItemsSource as List<ItemStats>;
-                    itemStats.SingleOrDefault(s => s.类型 == stats.类型 && s.词缀 == stats.词缀).选择 = !stats.选择;
-                    
-
-
-                }
         }
 
         public void clear()
@@ -388,7 +369,6 @@ namespace Path_Of_Trade
         private void Window_MouseLeave(object sender, MouseEventArgs e)
         {
             minwindow(b);
-            this.WindowState = System.Windows.WindowState.Minimized;
         }
         public void minwindow(bool b)
         {
@@ -396,7 +376,7 @@ namespace Path_Of_Trade
             {
                 //this.Topmost = false;
                 SendTo(this, HWND_BOTTOM);
-                //this.WindowState = System.Windows.WindowState.Minimized;
+                this.WindowState = System.Windows.WindowState.Minimized;
             }
         }
         public void messageshow(string str)
@@ -473,5 +453,8 @@ namespace Path_Of_Trade
                 messageshow("重新加载成功");
             else messageshow("重新加载失败");
         }
+
+
+
     }
 }

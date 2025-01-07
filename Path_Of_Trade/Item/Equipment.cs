@@ -35,16 +35,16 @@ namespace Path_Of_Trade.Item
                 {
                     value.Add(Convert.ToDecimal(match.Value));
                 }
-                itemStats.词缀 = Regex.Replace(temp[0], statspattern, "{0}");
+                itemStats.text = Regex.Replace(temp[0], statspattern, "{0}");
                 //itemStats.avg=itemStats.value.Average();
                 decimal avg = value.Average();
-                itemStats.最小值 = decimal.Round(avg * Settings1.Default.minroll / 100, GetPlaces(avg));
-                itemStats.最大值 = decimal.Round(avg * Settings1.Default.maxroll / 100, GetPlaces(avg));
+                itemStats.min = decimal.Round(avg * Settings1.Default.minroll / 100, GetPlaces(avg));
+                itemStats.max = decimal.Round(avg * Settings1.Default.maxroll / 100, GetPlaces(avg));
                 if (temp.Length == 1)
-                    itemStats.类型 = "explicit";
-                else itemStats.类型 = temp[1].Replace(")", "");
+                    itemStats.type = "explicit";
+                else itemStats.type = temp[1].Replace(")", "");
             }
-            if (itemStats.词缀 == null)
+            if (itemStats.text == null)
                 return null;
             else
                 return itemStats;
@@ -55,7 +55,7 @@ namespace Path_Of_Trade.Item
             if (label.Contains(':'))
             {
                 string[] temp= label.Split(':');
-                itemLabel.标签 = temp[0].Split('（')[0].Split('(')[0];
+                itemLabel.label = temp[0].Split('（')[0].Split('(')[0];
                 MatchCollection matches = Regex.Matches(temp[1], labelpattern);
                 decimal sum = 0;
                 foreach (Match match in matches)
@@ -64,10 +64,10 @@ namespace Path_Of_Trade.Item
                 }
                 if (matches.Count > 0)
                 {
-                    itemLabel.值 = (sum / (matches.Count > 1 ? 2 : 1)).ToString();
+                    itemLabel.value = (sum / (matches.Count > 1 ? 2 : 1)).ToString();
                 }
                 else
-                    itemLabel.值 = temp[1].Replace(" ", "").Replace("\r\n", "");
+                    itemLabel.value = temp[1].Replace(" ", "").Replace("\r\n", "");
                 
             }
             return itemLabel;
@@ -96,9 +96,9 @@ namespace Path_Of_Trade.Item
                             }
                         }
                     }
-                    if (Translate_Dictionary.translate[Itemlabel[1].值] == "ItemDisplayStringNormal")
+                    if (Translate_Dictionary.translate[Itemlabel[1].value] == "ItemDisplayStringNormal")
                         type = temp[2];
-                    else if(Translate_Dictionary.translate[Itemlabel[1].值] == "ItemDisplayStringMagic")
+                    else if(Translate_Dictionary.translate[Itemlabel[1].value] == "ItemDisplayStringMagic")
                         name= temp[2];
                     else
                     {
@@ -114,7 +114,7 @@ namespace Path_Of_Trade.Item
         public bool IsPOEItem()
         {
 
-            if (Translate_Dictionary.translate[Itemlabel[0].标签]== "ItemFilterRuleItemClasses" && Translate_Dictionary.translate[Itemlabel[1].标签] == "ItemDisplayStringRarity")
+            if (Translate_Dictionary.translate[Itemlabel[0].label]== "ItemFilterRuleItemClasses" && Translate_Dictionary.translate[Itemlabel[1].label] == "ItemDisplayStringRarity")
             {
                 return true;
             }

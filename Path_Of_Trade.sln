@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Path_Of_Trade", "Path_Of_Trade\Path_Of_Trade.csproj", "{A75C6B2B-AB33-420F-99B4-689E32B74C33}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A75C6B2B-AB33-420F-99B4-689E32B74C33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A75C6B2B-AB33-420F-99B4-689E32B74C33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A75C6B2B-AB33-420F-99B4-689E32B74C33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A75C6B2B-AB33-420F-99B4-689E32B74C33}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {26FED3EA-A893-443E-B0BA-63E5B37A8D35}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Path_Of_Trade" GeneratedClassName="Settings1">
+  <Profiles />
+  <Settings>
+    <Setting Name="league" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Standard</Value>
+    </Setting>
+    <Setting Name="taglanguage" Type="System.String" Scope="User">
+      <Value Profile="(Default)">TW</Value>
+    </Setting>
+    <Setting Name="statslanguage" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Traditional Chinese</Value>
+    </Setting>
+    <Setting Name="fetchnum" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="mokey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Ctrl</Value>
+    </Setting>
+    <Setting Name="key" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D</Value>
+    </Setting>
+    <Setting Name="minroll" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">90</Value>
+    </Setting>
+    <Setting Name="maxroll" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">130</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

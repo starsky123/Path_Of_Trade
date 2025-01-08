@@ -274,7 +274,7 @@ namespace Path_Of_Trade
                     checkBox.IsChecked = !checkBox.IsChecked;
                     ItemLabel label = (ItemLabel)cellinfo.Item;
                     List<ItemLabel> itemLabel = tagdatagrid.ItemsSource as List<ItemLabel>;
-                    itemLabel.SingleOrDefault(s => s.标签 == label.标签).选择 = !label.选择;
+                    itemLabel.SingleOrDefault(s => s.label == label.label).selected = !label.selected;
                 }
         }
 
@@ -289,7 +289,7 @@ namespace Path_Of_Trade
                     checkBox.IsChecked = !checkBox.IsChecked;
                     ItemStats stats = (ItemStats)cellinfo.Item;
                     List<ItemStats> itemStats = statsdatagrid.ItemsSource as List<ItemStats>;
-                    itemStats.SingleOrDefault(s => s.类型 == stats.类型 && s.词缀 == stats.词缀).选择 = !stats.选择;
+                    itemStats.SingleOrDefault(s => s.type == stats.type && s.text == stats.text).selected = !stats.selected;
                     
 
 
@@ -427,7 +427,7 @@ namespace Path_Of_Trade
 
         public bool IsPOEActive()
         {
-            bool b = false;
+            bool b = !false;
             string processName = "PathOfExile";
             Process[] prc = Process.GetProcesses();
             foreach (Process pr in prc)
@@ -530,7 +530,7 @@ namespace Path_Of_Trade
                 iteminfo += "最后登录角色: " + fetchitem.listing.account.lastCharacterName + "\r\n";
                 iteminfo += "--------\r\n";
                 iteminfo += fetchitem.listing.whisper + "\r\n";
-                iteminfotextbox.AppendText(iteminfo.Replace("--------\r\n--------\r\n", "--------\r\n"));
+                iteminfotextbox.AppendText(iteminfo.Replace("--------\r\n--------\r\n", "--------\r\n").Replace("--------\r\n--------\r\n", "--------\r\n"));
             }
             catch (Exception er) { messageshow(er.Message); }
         }

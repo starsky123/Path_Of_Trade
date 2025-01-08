@@ -11,10 +11,10 @@ namespace Path_Of_Trade.Item
     public class ItemStats 
     {
 
-        public bool 选择 { get; set; }=false;
-        public decimal 最小值 { get; set; }
-        public decimal 最大值 { get; set; }
-        public string 词缀 { get; set; }
-        public string 类型 { get; set; }
+        public bool selected { get; set; }=false;
+        public decimal min { get; set; }
+        public decimal max { get; set; }
+        public string text { get; set; }
+        public string type { get; set; }
     }
 }

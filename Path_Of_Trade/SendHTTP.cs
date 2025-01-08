@@ -56,7 +56,6 @@ namespace Path_Of_Trade
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
             request.Timeout = timeout * 1000;
-
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (StreamReader streamReader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
             {

@@ -8,7 +8,7 @@ namespace Path_Of_Trade.TradeAPI.POE2.FetchResult.FetchList
 {
     internal class Fetch_List
     {
-        //public Fetch_Account account { get; set; }
+        public Fetch_Account account { get; set; }
         public string indexed { get; set; }
         public string method { get; set; }
         public Fetch_Price price { get; set; }

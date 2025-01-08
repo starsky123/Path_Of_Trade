@@ -3,6 +3,7 @@ using Path_Of_Trade.Item;
 using Path_Of_Trade.TradeAPI;
 using Path_Of_Trade.TradeAPI.POE2.POEDictionary;
 using Path_Of_Trade.TradeAPI.POE2.Query;
+using Path_Of_Trade.TradeAPI.POE2.Query.QueryFilter.TradeFilter;
 using Path_Of_Trade.TradeAPI.POE2.Query.StatFilter;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace Path_Of_Trade.TradeAPI.POE2
         public string ID { get; set; }
         public int Total { get; set; }
         public List<string> result { get; set; } = new();
-        public static SearchItem Search(string league, string language,string name,string type,bool currupted,DataGrid tag, DataGrid stats,string currency)
+        public static SearchItem Search(string league, string language,string name,string type,bool currupted,DataGrid tag, DataGrid stats, TradeFilters_Filter tradeFilters)
         {
             try
             {
@@ -135,10 +136,7 @@ namespace Path_Of_Trade.TradeAPI.POE2
                     item.query.filters.map_filters.filters.map_bonus=new MinMaxFilter { min = bonus };
                 #endregion
                 #region trade_filter
-                if (currency != "Any")
-                {
-                    item.query.filters.trade_filters.filters.price = new() { option = currency };
-                }
+                item.query.filters.trade_filters.filters = tradeFilters;
                 #endregion
                 #region stats
                 StatFilters statFilters = new StatFilters();
@@ -174,12 +172,11 @@ namespace Path_Of_Trade.TradeAPI.POE2
                 {
                     DefaultValueHandling = DefaultValueHandling.Ignore
                 });
-
-                string result = SendHTTP.Post(SendHTTP.SearchApi[1] + league, 5, json);
+                string result = SendHTTP.Post(SendHTTP.SearchApi[1] + league, 100, json);
                 return JsonConvert.DeserializeObject<SearchItem>(result);
 
             }
-            catch (Exception er) { MessageBox.Show(er.Message); return null; }
+            catch (Exception er) { MainWindow.messageshow(er.Message); return null; }
         }
         public static string ItemStatsToTrade(ItemStats itemStats, string language)
         {

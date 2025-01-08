@@ -3,8 +3,10 @@ using Path_Of_Trade.Item;
 using Path_Of_Trade.Json;
 using Path_Of_Trade.TradeAPI;
 using Path_Of_Trade.TradeAPI.POE2;
+using Path_Of_Trade.TradeAPI.POE2.FetchResult;
 using Path_Of_Trade.TradeAPI.POE2.POEDictionary;
 using Path_Of_Trade.TradeAPI.POE2.Query;
+using Path_Of_Trade.TradeAPI.POE2.Query.QueryFilter.TradeFilter;
 using Path_Of_Trade.TradeAPI.POE2.Query.StatFilter;
 using System;
 using System.Collections;
@@ -19,6 +21,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -40,9 +43,9 @@ namespace Path_Of_Trade
     /// </summary>
     public partial class MainWindow : Window
     {
-        public bool b = true;
-        public Point be = new();
-        public Point af=new();
+        public static bool b = true;
+        public System.Windows.Point be = new();
+        public System.Windows.Point af = new();
         public static Dictionary<string, uint> keycode = new() { { "Ctrl", 0x0002 }, { "Alt", 0x0001 }, {"Shift", 0x0004 },{"Win", 0x0008 } };
         public static Dictionary<string, string> grid = new() { { "selected", "选择" }, { "label", "标签" }, { "value", "值" }, { "text", "词缀" }, { "type", "类型" } };
         public MainWindow()
@@ -65,7 +68,7 @@ namespace Path_Of_Trade
         }
         public void InitLeagueCombo()
         {
-            string result = SendHTTP.Get(SendHTTP.LeagueApi[1], 10);
+            string result = SendHTTP.Get(SendHTTP.LeagueApi[1], 15);
             if (!string.IsNullOrEmpty(result)) 
             {
                 League list=JsonConvert.DeserializeObject<League>(result);
@@ -110,6 +113,7 @@ namespace Path_Of_Trade
                 minnud.Value = Settings1.Default.minroll;
                 maxnud.Value = Settings1.Default.maxroll;
                 typecheckbox.Content = "";
+                
                 return true;
             }
             catch(Exception er) {messageshow(er.Message); return false; }
@@ -131,10 +135,15 @@ namespace Path_Of_Trade
             try
             {
                 InitCurrencyCombo();
-                curruptedcheckbox.Content = Translate_Dictionary.translate.FirstOrDefault(s => s.Value == "ItemPopupCorrupted").Key;
+                corruptedcheckbox.Content = Translate_Dictionary.translate.FirstOrDefault(s => s.Value == "ItemPopupCorrupted").Key;
                 return true;
             }
             catch (Exception er) { messageshow(er.Message); return false; }
+        }
+        public void SetWindowSize()
+        {
+            this.Height *= SystemParameters.PrimaryScreenHeight / (1600 / 1.5);
+            this.Width *= SystemParameters.PrimaryScreenWidth / (2560 / 1.5);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -171,12 +180,16 @@ namespace Path_Of_Trade
             tagdatagrid.ItemsSource = null;
             tagdatagrid.ItemsSource = equipment.Itemlabel;
 
-            equipment.Itemlabel[0].选择= true;
-            equipment.Itemlabel[1].选择= true;
+            equipment.Itemlabel[0].selected= true;
+            equipment.Itemlabel[1].selected= true;
+            if(equipment.Itemlabel[1].value==LabelTranslate("ItemDisplayStringUnique"))
+                typecheckbox.IsChecked=true;
             statsdatagrid.ItemsSource = null;
             statsdatagrid.ItemsSource = equipment.Itemstats;
 
-            curruptedcheckbox.IsChecked = equipment.currupted;
+            corruptedcheckbox.IsChecked = equipment.corrupted;
+
+            
         }
         public void trade()
         {
@@ -187,11 +200,17 @@ namespace Path_Of_Trade
                 string name = nametextbox.Text;
                 string type =((bool)typecheckbox.IsChecked)?typecheckbox.Content.ToString():"";
                 int num = Settings1.Default.fetchnum;
-                bool currupted =(bool) curruptedcheckbox.IsChecked;
+                bool currupted =(bool) corruptedcheckbox.IsChecked;
                 string currency=currencycombo.SelectedValue.ToString();
-                //List<ItemLabel> itemLabels = (List<ItemLabel>)tagdatagrid.ItemsSource;
-                //List<ItemStats> itemStats = (List<ItemStats>)statsdatagrid.ItemsSource;
-                SearchItem srjson = SearchItem.Search(league, statslang, name, type, currupted,tagdatagrid, statsdatagrid,currency);
+                bool Collapse= (bool)collapsecheckbox.IsChecked;
+                TradeFilters_Filter tradeFilters = new TradeFilters_Filter();
+                if (currency != "Any")
+                {
+                    tradeFilters.price = new() { option = currency };
+                }
+                if (Collapse)
+                    tradeFilters.collapse = new("true");
+                SearchItem srjson = SearchItem.Search(league, statslang, name, type, currupted,tagdatagrid, statsdatagrid, tradeFilters);
                 //&& srjson.Total > 0
                 if (srjson != null )
                 {
@@ -200,22 +219,21 @@ namespace Path_Of_Trade
                     pricedatagrid.ItemsSource = null;
                     if (f != null)
                     {
-                        var list = from p in f.result
-                                   //where pricetypecombo.Text == "任何" ? true : p.listing.price.type == Translate_Dictionary.translate[pricetypecombo.Text]
-                                   select new
-                                   {
-                                       //价格类型 = p.listing.price.type,
-                                       价格 = p.listing.price.amount.ToString(),
-                                       通货 = fetchresult_currency(p.listing.price.currency),
-                                       上架时间 = fetchresult_date(p.listing.indexed)
-                                   };
+                        List<ShowFetch> list = new();
+                        foreach (Fetch_Result p in f.result)
+                        {
+                            list.Add(new ShowFetch()
+                            {
+                                price = p.listing.price.amount.ToString(),
+                                currency = fetchresult_currency(p.listing.price.currency),
+                                time = fetchresult_date(p.listing.indexed),
+                                json = JsonConvert.SerializeObject(p)
+                            });
+                        }
                         pricedatagrid.ItemsSource = list;
-
                     }
                     else
-                    {
-                        pricedatagrid.ItemsSource = new List<Option>() { new Option("无查询结果") };
-                    }                   
+                        messageshow("无查询结果");               
                 }
             }
             catch (Exception er) { messageshow(er.Message); }
@@ -285,11 +303,12 @@ namespace Path_Of_Trade
                 nametextbox.Text = "";
                 typecheckbox.Content = "";
                 typecheckbox.IsChecked = false;
-                curruptedcheckbox.IsChecked = false;
+                corruptedcheckbox.IsChecked = false;
                 tagdatagrid.ItemsSource = null;
                 statsdatagrid.ItemsSource = null;
                 pricedatagrid.ItemsSource = null;
                 webtextbox.Text = "";
+                iteminfotextbox.Document = new();
             }
             catch(Exception ex) { messageshow(ex.Message); }
         }
@@ -399,7 +418,7 @@ namespace Path_Of_Trade
                 //this.WindowState = System.Windows.WindowState.Minimized;
             }
         }
-        public void messageshow(string str)
+        public static void messageshow(string str)
         {
             b = false;
             MessageBox.Show(str);
@@ -420,7 +439,6 @@ namespace Path_Of_Trade
                 }
             }
             return b;
-            //return true;
         }
 
         #region back
@@ -447,7 +465,7 @@ namespace Path_Of_Trade
 
         private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            be = e.GetPosition(this);
+            be = e.GetPosition(this); 
         }
 
         private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -473,5 +491,94 @@ namespace Path_Of_Trade
                 messageshow("重新加载成功");
             else messageshow("重新加载失败");
         }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                iteminfotextbox.Document = new();
+                List<ShowFetch> list = (List<ShowFetch>)pricedatagrid.ItemsSource;
+                Fetch_Result fetchitem = JsonConvert.DeserializeObject<Fetch_Result>(list[pricedatagrid.SelectedIndex].json);
+                string iteminfo = "";
+                if (fetchitem.item.name != "")
+                {
+                    if (fetchitem.item.rarity == "Unique")
+                        iteminfo += LabelTranslate(fetchitem.item.name)+" ";
+                    else
+                    {
+                        string[] temp = fetchitem.item.name.Split(' ');
+                        iteminfo += LabelTranslate(temp[0]) + LabelTranslate(" " + temp[1]) + " ";
+                    }
+                }
+                iteminfo += LabelTranslate(fetchitem.item.baseType) + "\r\n";
+                iteminfo += "--------\r\n";
+                iteminfo += LabelTranslate("ItemDisplayStringRarity") + ": " + LabelTranslate("ItemDisplayString"+fetchitem.item.rarity) + "\r\n";
+                iteminfo += LabelTranslate("ItemDisplayStringItemLevel") + ": " + fetchitem.item.ilvl.ToString() + "\r\n";
+                iteminfo += "--------\r\n";
+                iteminfo += ModsTranslate(fetchitem.item.runeMods);
+                iteminfo += "--------\r\n";
+                iteminfo += ModsTranslate(fetchitem.item.implicitMods);
+                iteminfo += "--------\r\n";
+                iteminfo += ModsTranslate(fetchitem.item.explicitMods);
+                iteminfo += "--------\r\n";
+                if (fetchitem.item.corrupted)
+                {
+                    iteminfo += LabelTranslate("ItemPopupCorrupted") + "\r\n";
+                    iteminfo += "--------\r\n";
+                }
+                iteminfo += "卖家账号: " + fetchitem.listing.account.name + "\r\n";
+                iteminfo += "最后登录角色: " + fetchitem.listing.account.lastCharacterName + "\r\n";
+                iteminfo += "--------\r\n";
+                iteminfo += fetchitem.listing.whisper + "\r\n";
+                iteminfotextbox.AppendText(iteminfo.Replace("--------\r\n--------\r\n", "--------\r\n"));
+            }
+            catch (Exception er) { messageshow(er.Message); }
+        }
+        public string StatsTranslate(string text)
+        {
+            try
+            {
+                return ItemStats_Dictionary.ItemStatsDictionary.FirstOrDefault(s => s.Value == text && s.Key.language == Settings1.Default.statslanguage).Key.text;
+            }
+            catch { return ""; }
+            
+        }
+        public string LabelTranslate(string text)
+        {
+            try
+            {
+                return Translate_Dictionary.translate.FirstOrDefault(s => s.Value == text).Key;
+            }
+            catch { return ""; }
+        }
+        public string ModsTranslate(List<string> Mods)
+        {
+            string t = "";
+            if (Mods != null)
+            {
+                string statspattern = @"[+\-]?\d+(\.\d+)?";
+                string pattern = @"\{0\}";
+                for (int i = 0; i < Mods.Count; i++)
+                {
+                    string temp = StatsTranslate(Regex.Replace(Mods[i], statspattern, "#"))??"";
+                    MatchCollection matches = Regex.Matches(Mods[i], statspattern);
+                    int j = 0;
+                    t += Regex.Replace(temp, pattern, match =>
+                    {
+                        return matches[j++].Value.ToString();
+                    }) + "\r\n";
+                }
+            }
+            return t;
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+
+
+
     }
 }

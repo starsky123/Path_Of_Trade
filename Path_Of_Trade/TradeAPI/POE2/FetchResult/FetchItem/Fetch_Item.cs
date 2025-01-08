@@ -16,8 +16,10 @@ namespace Path_Of_Trade.TradeAPI.POE2.FetchResult.FetchItem
         public string icon { get; set; }
         public string id { get; set; }
         public bool identified { get; set; }
+        public bool corrupted { get; set; }=false;
         public int ilvl { get; set; }
         public List<string> implicitMods { get; set; }
+        public List<string> runeMods { get; set; }
         public string league { get; set; }
         public string name { get; set; }
         //public List<Fetch_Properties> properties { get; set; }

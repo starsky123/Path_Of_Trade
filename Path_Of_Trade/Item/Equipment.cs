@@ -19,7 +19,7 @@ namespace Path_Of_Trade.Item
         const string statspattern = @"[+\-]?\d+(\.\d+)?";
         public string? name { get; set; }
         public string? type { get; set; }
-        public bool currupted { get; set; } = false;
+        public bool corrupted { get; set; } = false;
         public List<ItemLabel> Itemlabel = new();
         public List<ItemStats> Itemstats = new();
         public ItemStats GetStats(string stats)
@@ -88,7 +88,7 @@ namespace Path_Of_Trade.Item
                             if (temp[i].Contains(':'))
                                 Itemlabel.Add(GetLabel(temp[i]));
                             else if (temp[i] == Translate_Dictionary.translate.FirstOrDefault(s=>s.Value== "ItemPopupCorrupted").Key)
-                                currupted=true;
+                                corrupted=true;
                             else
                             {
                                 if (GetStats(temp[i]) != null)

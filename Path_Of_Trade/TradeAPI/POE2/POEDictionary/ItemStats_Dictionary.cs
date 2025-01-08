@@ -36,29 +36,6 @@ namespace Path_Of_Trade.TradeAPI.POE2.POEDictionary
                             string[] temp2 = temp1[j].Split(new string[] { "\r\n" }, StringSplitOptions.None);
                             string lang = temp2[0].Split("\"")[1];
                             int num = Convert.ToInt32(temp2[1].Replace("\t", ""));
-                            //if (valuelist.Count>num)
-                            //    MessageBox.Show(temp1[0]);
-                            //string text = temp2[2].Split("\"")[1].Replace("0:+d", "0").Replace("\t", "");
-                            //if (lang == "English")
-                            //    value = text.Replace("{0}", "#");
-                            //else
-                            //{
-                            //    string p = @"\[(.*?)\]";
-                            //    MatchCollection matches = Regex.Matches(text, p);
-                            //    foreach (Match match in matches)
-                            //    {
-                            //        if (match.Groups[1].Value.Contains('|'))
-                            //        {
-                            //            string t = match.Groups[1].Value.Split('|')[1];
-                            //            text = text.Replace("[" + match.Groups[1].Value + "]", t);
-                            //        }
-                            //    }
-                            //}
-                            //langStats.language = lang;
-                            //langStats.text = text;
-                            //ItemStatsDictionary.Add(langStats, value);
-                            
-
                             for (int k = 0; k < num; k++)
                             {
                                 string text = temp2[2 + k].Split("\"")[1].Replace("0:+d", "0").Replace("\t", "");
@@ -91,7 +68,7 @@ namespace Path_Of_Trade.TradeAPI.POE2.POEDictionary
                 }
 
             }
-            catch (Exception er) { MessageBox.Show(er.Message); }
+            catch (Exception er) { MainWindow.messageshow(er.Message); }
         }
     }
 }

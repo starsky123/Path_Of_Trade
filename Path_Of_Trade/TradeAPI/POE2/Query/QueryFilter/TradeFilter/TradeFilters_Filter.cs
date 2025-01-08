@@ -12,6 +12,7 @@ namespace Path_Of_Trade.TradeAPI.POE2.Query.QueryFilter.TradeFilter
         public Input account { get; set; }
         public Price price { get; set; }
         public Option sale_type { get; set; }
+        public Option collapse { get; set; } 
 
     }
 }

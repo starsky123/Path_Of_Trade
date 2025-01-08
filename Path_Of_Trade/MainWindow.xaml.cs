@@ -407,7 +407,7 @@ namespace Path_Of_Trade
         private void Window_MouseLeave(object sender, MouseEventArgs e)
         {
             minwindow(b);
-            this.WindowState = System.Windows.WindowState.Minimized;
+            //this.WindowState = System.Windows.WindowState.Minimized;
         }
         public void minwindow(bool b)
         {
@@ -415,7 +415,7 @@ namespace Path_Of_Trade
             {
                 //this.Topmost = false;
                 SendTo(this, HWND_BOTTOM);
-                //this.WindowState = System.Windows.WindowState.Minimized;
+                this.WindowState = System.Windows.WindowState.Minimized;
             }
         }
         public static void messageshow(string str)

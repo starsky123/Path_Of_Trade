@@ -427,7 +427,7 @@ namespace Path_Of_Trade
 
         public bool IsPOEActive()
         {
-            bool b = !false;
+            bool b = false;
             string processName = "PathOfExile";
             Process[] prc = Process.GetProcesses();
             foreach (Process pr in prc)
